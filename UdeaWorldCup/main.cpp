@@ -1,41 +1,32 @@
 #include <iostream>
-#include "Estadistica.h" // 1. Traemos Estadistica.h para que el main conozca la clase
+#include "Jugador.h" // Solo se incluira jugador.h ya que dentro de el esta Estadistica.h
 
-using namespace std; // Para no tener que escribir std::cout a cada rato
+using namespace std;
 
 int main() {
-    cout << "--- LABORATORIO DE PRUEBAS ---" << endl;
+    cout << "--- LABORATORIO DE PRUEBAS: CLASE JUGADOR ---" << endl;
 
-    // 2. CREAR EL OBJETO
-    Estadistica* libretaMbappe = new Estadistica();
+    // 1. CREAR EL JUGADOR usando el 2do constructor
+    Jugador* elBicho = new Jugador("Cristiano", "Ronaldo", 7);
 
-    // 3. CONSULTAR EL ESTADO INICIAL
-    // Como es un puntero (*), usamos una flecha (->) para llamar a sus métodos.
-    cout << "\nGoles al iniciar: " << libretaMbappe->getGoles() << endl;
+    cout << "\nFichaje confirmado: " << elBicho->getNombreCompleto() << " (Camiseta #" << elBicho->getNumCamiseta() << ")" << endl;
 
-    // 4. USAR LOS MÉTODOS
-    cout << "\nSimulando un partido donde hace 3 goles y juega 90 mins..." << endl;
-    // Parámetros: golesNuevos=3, asistNuevas=0, amarillas=1, rojas=0, mins=90
-    libretaMbappe->actualizarStats(3, 0, 1, 0, 90);
+    // 2. Verificar antes del inicio del mundial
+    cout << "Goles antes del Mundial: " << elBicho->getStats()->getGoles() << endl;
 
-    // 5. CONSULTAR EL NUEVO ESTADO
-    cout << "Goles actualizados: " << libretaMbappe->getGoles() << endl;
-    cout << "Amarillas actuales: " << libretaMbappe->getTarjetasAmarillas() << endl;
-    cout << "Minutos jugados: " << libretaMbappe->getMinutos() << endl;
+    // 3. SIMULAR UN PARTIDO
+    // Se le suman goles y minutos provenientes de un partido
+    cout << "\nSimulando partido de fase de grupos..." << endl;
+    elBicho->actualizarEstadisticasJugador(2, 1, 0, 0, 90);
 
-    // Simulemos un segundo partido
-    cout << "\nSimulando segundo partido (anota 1 gol mas)..." << endl;
-    libretaMbappe->actualizarStats(1, 0, 2, 1, 90);
+    // 4. CONSULTAR DATOS ACTUALIZADOS
+    cout << "Goles despues del partido: " << elBicho->getStats()->getGoles() << endl;
+    cout << "Asistencias totales: " << elBicho->getStats()->getAsistencias() << endl;
+    cout << "Minutos jugados: " << elBicho->getStats()->getMinutos() << endl;
 
-    cout << "Goles totales ahora: " << libretaMbappe->getGoles() << endl;
-    cout << "Amarillas totales ahora: " << libretaMbappe->getTarjetasAmarillas()<<endl;
-    cout << "Rojas totales ahora: " << libretaMbappe->getTarjetasRojas()<<endl;
-    cout << "Minutos totales ahora: " << libretaMbappe->getMinutos() << endl;
+    delete elBicho;
 
-    // 6. DESTRUIR EL OBJETO
-    delete libretaMbappe;
-
-    cout << "\nPrueba finalizada. Memoria liberada." << endl;
+    cout << "\nPrueba exitosa. Jugador y libreta eliminados de la RAM." << endl;
 
     return 0;
 }
