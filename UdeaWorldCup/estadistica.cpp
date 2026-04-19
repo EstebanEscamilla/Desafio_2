@@ -1,4 +1,4 @@
-#include "Estadistica.h" // 1. Traemos el menú para saber qué prometimos
+#include "Estadistica.h"
 
 //Constructor
 Estadistica::Estadistica() {

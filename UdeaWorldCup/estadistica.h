@@ -13,6 +13,7 @@ public:
     Estadistica();          //Constructor
     ~Estadistica();         //Destructor
 
+    // Metodo para actualizar stats
     void actualizarStats(int golesNuevos, int asistNuevas, int amarillasNuevas, int rojasNuevas, int minsNuevos);
 
 
