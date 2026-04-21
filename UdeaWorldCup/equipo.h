@@ -7,6 +7,8 @@
 class Equipo {
 private:
     // 1. Datos básicos y de Clasificación
+    double promedioGolesFavorHistorico; // GF
+    double promedioGolesContraHistorico; // GC
     std::string nombrePais;
     std::string nombreEntrenador;
     int rankingFIFA;
@@ -28,8 +30,12 @@ public:
     // Metodos:
     void agregarJugador(Jugador* nuevoJugador);
     void actualizarResultadosEquipo(int golesAnotados, int golesRecibidos, int puntosGanados);
+    void setPromedioGolesFavorHistorico(double _goles);
+    void setPromedioGolesContraHistorico(double _goles);
 
     // --- GETTERS (Consultas) ---
+    double getPromedioGolesFavorHistorico();
+    double getPromedioGolesContraHistorico();
     std::string getNombrePais();
     std::string getNombreEntrenador();
     int getRankingFIFA();

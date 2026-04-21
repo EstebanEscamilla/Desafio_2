@@ -9,8 +9,6 @@ Equipo::Equipo(std::string _nombrePais, std::string _nombreEntrenador, int _rank
     this->rankingFIFA = _rankingFIFA;
     this->confederacion = _confederacion;
 
-    // TODO COMIENZA EN CERO:
-    // Completa la inicialización de los puntos, goles y el contador de jugadores
     this->puntosFaseGrupos = 0;
     this->golesFavor = 0;
     this->golesContra = 0;
@@ -22,10 +20,8 @@ Equipo::Equipo(std::string _nombrePais, std::string _nombreEntrenador, int _rank
     }
 }
 
-// 2. DESTRUCTOR
+// DESTRUCTOR
 Equipo::~Equipo() {
-    // Si el equipo desaparece, deberia destruir a los jugadores que tiene en su lista
-    // Recorremos los casilleros que hemos ocupado hasta el momento:
     for (int i = 0; i < this->cantidadJugadoresRegistrados; i++) {
         if (this->plantilla[i] != nullptr) {
             delete this->plantilla[i];
@@ -33,7 +29,7 @@ Equipo::~Equipo() {
     }
 }
 
-// 3. AGREGAR JUGADOR
+// AGREGAR JUGADOR
 // Metodo para agregar jugador verificando que el equipo no esta lleno
 void Equipo::agregarJugador(Jugador* nuevoJugador) {
     // Primero, verificamos que el equipo no esté lleno (máximo 26)
@@ -47,12 +43,29 @@ void Equipo::agregarJugador(Jugador* nuevoJugador) {
     }
 }
 
-// 4. ACTUALIZAR RESULTADOS (Después de un partido)
+// ACTUALIZAR RESULTADOS (Después de un partido)
 void Equipo::actualizarResultadosEquipo(int golesAnotados, int golesRecibidos, int puntosGanados) {
     this->golesFavor += golesAnotados;
     this->golesContra += golesRecibidos;
     this->puntosFaseGrupos += puntosGanados;
 }
+
+void Equipo::setPromedioGolesFavorHistorico(double _goles) {
+    this->promedioGolesFavorHistorico = _goles;
+}
+
+void Equipo::setPromedioGolesContraHistorico(double _goles) {
+    this->promedioGolesContraHistorico = _goles;
+}
+
+double Equipo::getPromedioGolesFavorHistorico() {
+    return this->promedioGolesFavorHistorico;
+}
+
+double Equipo::getPromedioGolesContraHistorico() {
+    return this->promedioGolesContraHistorico;
+}
+
 
 // 5. GETTERS BÁSICOS
 std::string Equipo::getNombrePais() {

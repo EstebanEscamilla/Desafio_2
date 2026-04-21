@@ -31,7 +31,7 @@ int main() {
          << grupoA->getEquipo(0)->getJugador(0)->getStats()->getGoles() << endl;
 
     // 6. LA LIMPIEZA
-    cout << "\nBorrando el grupo... (Iniciando explosion en cadena)" << endl;
+    cout << "\nBorrando el grupo..." << endl;
     delete grupoA;
 
     cout << "¡Sistema limpio!" << endl;

@@ -4,6 +4,8 @@
 #include <string>
 #include "Estadistica.h"
 
+
+
 class Jugador {
 private:
     std::string nombres;
