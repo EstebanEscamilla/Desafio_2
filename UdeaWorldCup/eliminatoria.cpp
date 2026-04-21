@@ -17,12 +17,12 @@ Equipo* jugarPartidoUnico(Equipo* e1, Equipo* e2) {
     cout << "[ESTADÍSTICA] " << e1->getNombrePais() << " (Exp: " << lambda1 << ") vs "
          << e2->getNombrePais() << " (Exp: " << lambda2 << ")" << endl;
 
-    // 4. LÓGICA DE DESEMPATE (La cláusula del Ranking FIFA)
+    // 4. LÓGICA DE DESEMPATE La cláusula del Ranking FIFA
     if (goles1 == goles2) {
         cout << " -> EMPATE TÉCNICO (" << goles1 << "-" << goles2 << "). Aplicando sesgo por Ranking FIFA..." << endl;
 
         if (e1->getRankingFIFA() < e2->getRankingFIFA()) {
-            goles1++; // Ajuste manual: +1 al favorito
+            goles1++;
             cout << " -> +1 gol para " << e1->getNombrePais() << " por mejor Ranking FIFA." << endl;
         } else {
             goles2++;
