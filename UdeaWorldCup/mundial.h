@@ -2,7 +2,6 @@
 #define MUNDIAL_H
 
 #include <string>
-#include <iostream>
 #include "Grupo.h"
 
 class Mundial {

@@ -1,8 +1,8 @@
 #include "Mundial.h"
-#include "Mundial.h"
 #include <fstream>
 #include <sstream>
 #include <cstdlib> // Para atoi y atof
+#include <iostream>
 
 // CONSTRUCTOR
 Mundial::Mundial() {
@@ -75,13 +75,14 @@ void Mundial::cargarEquiposDesdeArchivo(std::string rutaArchivo) {
         double promedioGC = (pj > 0) ? (gcTotal / pj) : 0.0;
 
         // 5. Instanciamos el Equipo en memoria dinámica
-        // Asegúrate de que el constructor de Equipo reciba (string, string, int, string)
         Equipo* nuevo = new Equipo(pais, dt, ranking, conf);
 
-        // 6. Seteamos los promedios para la fórmula de Goles Esperados (Lambda)
-        // REVISA: Estos métodos deben existir en tu Equipo.h
-        nuevo->setGolesFavorHistorico(promedioGF);
-        nuevo->setGolesContraHistorico(promedioGC);
+        nuevo->setPromedioGolesFavorHistorico(promedioGF);
+        nuevo->setPromedioGolesContraHistorico(promedioGC);
+
+        // Le pasamos el total histórico crudo que leímos del archivo (gfTotal) convertido a entero
+        nuevo->generarJugadoresAutomaticamente((int)gfTotal);
+        // -------------------------
 
         // 7. Guardamos el puntero en el arreglo maestro del Mundial
         this->todosLosEquipos[totalEquiposCargados] = nuevo;

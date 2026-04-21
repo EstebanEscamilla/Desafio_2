@@ -1,7 +1,7 @@
 #ifndef GRUPO_H
 #define GRUPO_H
 
-#include <string>
+
 #include "Equipo.h"
 
 class Grupo {

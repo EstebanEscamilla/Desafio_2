@@ -1,40 +1,30 @@
 #include <iostream>
-#include "Grupo.h"
-#include "Equipo.h"
-#include "Jugador.h"
+#include "Mundial.h"
 
 using namespace std;
 
 int main() {
-    cout << "--- PRUEBA DE FUEGO ---" << endl;
+    cout << "========================================" << endl;
+    cout << "   INICIANDO SIMULADOR MUNDIAL 2026" << endl;
+    cout << "========================================" << endl;
 
-    // Creamos el Grupo A
-    Grupo* grupoA = new Grupo('A');
+    // 1. Instanciamos el motor principal
+    Mundial* simulador = new Mundial();
 
-    // Creamos un par de equipos para meter al grupo
-    Equipo* e1 = new Equipo("Argentina", "Lionel Scaloni", 1, "CONMEBOL");
-    Equipo* e2 = new Equipo("Francia", "Didier Deschamps", 2, "UEFA");
+    // 2. Ejecutamos la carga (Asegúrate de poner el nombre real de tu archivo CSV)
+    // Si tu archivo está en la misma carpeta, pon solo el nombre.
+    simulador->cargarEquiposDesdeArchivo("C:\\Users\\Esteban Escamilla\\Desktop\\UNIVERSIDAD\\SEMESTRES\\SEMESTRE 2026-1\\INFORMATICA II\\DESAFIO 1\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv");
 
-    // Agregamos un jugador
-    Jugador* messi = new Jugador("Lionel", "Messi", 10);
-    e1->agregarJugador(messi);
+    // 3. Pequeña prueba de validación (El Laboratorio)
+    // Vamos a imprimir al primer equipo cargado para ver si fabricó a sus jugadores
+    // Nota: Esto asume que tienes un getter getEquipo(int index) o que puedes acceder a ellos.
+    // Si no lo tienes, puedes poner un cout dentro de Mundial.cpp solo para ver la magia.
 
-    // Metemos los equipos al grupo
-    grupoA->agregarEquipo(e1);
-    grupoA->agregarEquipo(e2);
+    cout << "\nPresiona ENTER para salir..." << endl;
+    cin.get();
 
-    cout << "\nGrupo " << grupoA->getLetra() << " creado con "
-         << grupoA->getCantidadEquiposRegistrados() << " equipos." << endl;
-
-    //PRUEBA DE NAVEGACIÓN (La "Cuádruple Flecha")
-    cout << "Goles iniciales del 10 de " << grupoA->getEquipo(0)->getNombrePais() << ": "
-         << grupoA->getEquipo(0)->getJugador(0)->getStats()->getGoles() << endl;
-
-    // 6. LA LIMPIEZA
-    cout << "\nBorrando el grupo..." << endl;
-    delete grupoA;
-
-    cout << "¡Sistema limpio!" << endl;
+    // Limpiamos la memoria
+    delete simulador;
 
     return 0;
 }
