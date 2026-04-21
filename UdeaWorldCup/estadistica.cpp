@@ -23,6 +23,10 @@ void Estadistica::actualizarStats(int golesNuevos, int asistNuevas, int amarilla
     this->minutos += minsNuevos;
 }
 
+void Estadistica::setGoles(int _goles) {
+    this->goles = _goles;
+}
+
 //Getters
 int Estadistica::getGoles() {
     return this->goles;

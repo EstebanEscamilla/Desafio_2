@@ -7,7 +7,7 @@
 class Equipo {
 private:
     // 1. Datos básicos y de Clasificación
-    double promedioGolesFavorHistorico; // GF
+    double promedioGolesFavorHistorico;    // GF
     double promedioGolesContraHistorico; // GC
     std::string nombrePais;
     std::string nombreEntrenador;
@@ -32,6 +32,7 @@ public:
     void actualizarResultadosEquipo(int golesAnotados, int golesRecibidos, int puntosGanados);
     void setPromedioGolesFavorHistorico(double _goles);
     void setPromedioGolesContraHistorico(double _goles);
+    void generarJugadoresAutomaticamente(int golesTotalesEquipo);
 
     // --- GETTERS (Consultas) ---
     double getPromedioGolesFavorHistorico();

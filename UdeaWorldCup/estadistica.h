@@ -15,7 +15,7 @@ public:
 
     // Metodo para actualizar stats
     void actualizarStats(int golesNuevos, int asistNuevas, int amarillasNuevas, int rojasNuevas, int minsNuevos);
-
+    void setGoles(int _goles);
 
     // Getters para consultar los atributos
     int getGoles();

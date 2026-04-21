@@ -1,5 +1,6 @@
 #include "Equipo.h"
 #include <string>
+#include <sstream> // Necesario para fabricar los nombres
 
 // 1. CONSTRUCTOR
 Equipo::Equipo(std::string _nombrePais, std::string _nombreEntrenador, int _rankingFIFA, std::string _confederacion) {
@@ -48,6 +49,38 @@ void Equipo::actualizarResultadosEquipo(int golesAnotados, int golesRecibidos, i
     this->golesFavor += golesAnotados;
     this->golesContra += golesRecibidos;
     this->puntosFaseGrupos += puntosGanados;
+}
+
+void Equipo::generarJugadoresAutomaticamente(int golesTotalesEquipo) {
+    // 1. Calculamos cómo repartir los goles
+    int baseGoles = golesTotalesEquipo / 26; // Lo que le toca a todos sí o sí
+    int residuoGoles = golesTotalesEquipo % 26; // Los goles que sobran
+
+    for (int i = 0; i < 26; i++) {
+        int numeroCamiseta = i + 1; // De 1 a 26
+
+        // 2. Fabricamos las etiquetas "nombreX" y "apellidoX"
+        std::stringstream ssNombre, ssApellido;
+        ssNombre << "nombre" << numeroCamiseta;
+        ssApellido << "apellido" << numeroCamiseta;
+
+        // 3. Creamos al jugador
+        Jugador* nuevoJugador = new Jugador(ssNombre.str(), ssApellido.str(), numeroCamiseta);
+
+        // 4. Repartición de goles
+        int golesParaEsteJugador = baseGoles;
+        if (i < residuoGoles) {
+            golesParaEsteJugador++; // Le damos 1 gol extra a los primeros para acabar el residuo
+        }
+
+        // Asumimos que tu clase Jugador tiene acceso a su clase Estadistica
+        // Todas las demás stats (rojas, amarillas, etc.) deben iniciar en 0 en el constructor de Estadistica
+        nuevoJugador->getStats()->setGoles(golesParaEsteJugador);
+
+        // 5. Lo metemos a la plantilla del equipo
+        this->plantilla[this->cantidadJugadoresRegistrados] = nuevoJugador;
+        this->cantidadJugadoresRegistrados++;
+    }
 }
 
 void Equipo::setPromedioGolesFavorHistorico(double _goles) {
