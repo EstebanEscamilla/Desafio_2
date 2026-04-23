@@ -3,12 +3,15 @@
 
 #include <string>
 #include "Grupo.h"
+#include "Equipo.h"
 
 class Mundial {
 private:
     Grupo* grupos[12];
     Equipo* todosLosEquipos[48];
     short int totalEquiposCargados;
+    void ordenarEquiposPorRanking(Equipo* arreglo[], int size);
+    bool esValidoParaGrupo(Grupo* grupo, Equipo* equipoCandidato);
 
 public:
     // Constructor y Destructor
@@ -23,6 +26,7 @@ public:
     // Lógica de torneo
     void simularFaseGrupos();
     void simularEliminatorias();
+    void realizarSorteo();
 };
 
 #endif // MUNDIAL_H

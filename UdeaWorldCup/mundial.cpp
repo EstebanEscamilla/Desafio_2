@@ -97,9 +97,156 @@ void Mundial::cargarEquiposDesdeArchivo(std::string rutaArchivo) {
     std::cout << "--- Proceso de carga finalizado con exito ---" << std::endl;
 }
 
+void Mundial::ordenarEquiposPorRanking(Equipo* arreglo[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            // Si el ranking del actual es mayor (peor) que el siguiente, se intercambian
+            if (arreglo[j]->getRankingFIFA() > arreglo[j+1]->getRankingFIFA()) {
+                Equipo* temp = arreglo[j];
+                arreglo[j] = arreglo[j+1];
+                arreglo[j+1] = temp;
+            }
+        }
+    }
+}
+
+
+bool Mundial::esValidoParaGrupo(Grupo* grupo, Equipo* equipoCandidato) {
+    int contadorMismaConfederacion = 0;
+    string confCandidato = equipoCandidato->getConfederacion();
+
+    // Contamos cuántos de la misma confederación ya están en el grupo
+    for (int i = 0; i < grupo->getCantidadEquiposActuales(); i++) {
+        if (grupo->getEquipo(i)->getConfederacion() == confCandidato) {
+            contadorMismaConfederacion++;
+        }
+    }
+
+    // Regla: UEFA máximo 2, los demás máximo 1
+    if (confCandidato == "UEFA") {
+        return contadorMismaConfederacion < 2;
+    } else {
+        return contadorMismaConfederacion < 1;
+    }
+}
+
+
+// ---------------------------------------------------------
+// 3. EL MOTOR PRINCIPAL: EL SORTEO
+// ---------------------------------------------------------
 void Mundial::realizarSorteo() {
-    // Aquí tomaremos los 48 equipos y los repartiremos en los 12 grupos
-    std::cout << "[SISTEMA] Inicializando bombos y sorteo..." << std::endl;
+    srand(time(0)); // Inicializamos la semilla de aletoriedad
+
+    cout << "\n[SISTEMA] Preparando los bombos para el sorteo..." << endl;
+
+    Equipo* bombo1[12]; Equipo* bombo2[12];
+    Equipo* bombo3[12]; Equipo* bombo4[12];
+
+    Equipo* restoEquipos[47];
+    int indexResto = 0;
+
+    // 1. Separar al Anfitrión (United States) y agrupar al resto
+    for (int i = 0; i < 48; i++) {
+        if (todosLosEquipos[i]->getNombrePais() == "United States" || todosLosEquipos[i]->getNombrePais() == "USA") {
+            bombo1[0] = todosLosEquipos[i]; // El anfitrión va de primero
+        } else {
+            restoEquipos[indexResto] = todosLosEquipos[i];
+            indexResto++;
+        }
+    }
+
+    // 2. Ordenar a los 47 restantes por Ranking FIFA
+    ordenarEquiposPorRanking(restoEquipos, 47);
+
+    // 3. Llenar los Bombos matemáticamente
+    for (int i = 0; i < 47; i++) {
+        if (i < 11) {
+            bombo1[i + 1] = restoEquipos[i];   // Termina de llenar el Bombo 1
+        } else if (i < 23) {
+            bombo2[i - 11] = restoEquipos[i];  // Llena el Bombo 2
+        } else if (i < 35) {
+            bombo3[i - 23] = restoEquipos[i];  // Llena el Bombo 3
+        } else {
+            bombo4[i - 35] = restoEquipos[i];  // Llena el Bombo 4
+        }
+    }
+
+    cout << "[SISTEMA] Bombos creados. Iniciando extraccion al azar..." << endl;
+
+    // 4. EL SORTEO CON PROTECCIÓN ANTI-DEADLOCK
+    bool sorteoExitoso = false;
+    int reinicios = 0;
+
+    while (!sorteoExitoso) {
+        sorteoExitoso = true;
+
+        // Vaciar todos los grupos antes de empezar o reiniciar
+        for(int i = 0; i < 12; i++) {
+            grupos[i]->vaciarGrupo();
+        }
+
+        bool usadoB1[12] = {false}; bool usadoB2[12] = {false};
+        bool usadoB3[12] = {false}; bool usadoB4[12] = {false};
+
+        // Recorrer los 12 grupos
+        for (int g = 0; g < 12; g++) {
+            int index, intentos;
+            bool asignado;
+
+            // --- Extraer del BOMBO 1 --- (Sin restricciones porque el grupo está vacío)
+            do { index = rand() % 12; } while (usadoB1[index]);
+            usadoB1[index] = true;
+            grupos[g]->agregarEquipo(bombo1[index]);
+
+            // --- Extraer del BOMBO 2 ---
+            intentos = 0; asignado = false;
+            while (!asignado && intentos < 100) {
+                index = rand() % 12;
+                if (!usadoB2[index] && esValidoParaGrupo(grupos[g], bombo2[index])) {
+                    usadoB2[index] = true;
+                    grupos[g]->agregarEquipo(bombo2[index]);
+                    asignado = true;
+                }
+                intentos++;
+            }
+            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+
+            // --- Extraer del BOMBO 3 ---
+            intentos = 0; asignado = false;
+            while (!asignado && intentos < 100) {
+                index = rand() % 12;
+                if (!usadoB3[index] && esValidoParaGrupo(grupos[g], bombo3[index])) {
+                    usadoB3[index] = true;
+                    grupos[g]->agregarEquipo(bombo3[index]);
+                    asignado = true;
+                }
+                intentos++;
+            }
+            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+
+            // --- Extraer del BOMBO 4 ---
+            intentos = 0; asignado = false;
+            while (!asignado && intentos < 100) {
+                index = rand() % 12;
+                if (!usadoB4[index] && esValidoParaGrupo(grupos[g], bombo4[index])) {
+                    usadoB4[index] = true;
+                    grupos[g]->agregarEquipo(bombo4[index]);
+                    asignado = true;
+                }
+                intentos++;
+            }
+            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+        }
+
+        if (!sorteoExitoso) {
+            reinicios++; // Incrementa contador y el While vuelve a empezar automáticamente
+        }
+    }
+
+    cout << "\n========================================" << endl;
+    cout << "   SORTEO FINALIZADO CON EXITO" << endl;
+    cout << "   (Reinicios anti-bloqueo: " << reinicios << ")" << endl;
+    cout << "========================================\n" << endl;
 }
 
 void Mundial::mostrarTablasPosiciones() {
