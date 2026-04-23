@@ -13,7 +13,11 @@ int main() {
 
     // 2. Ejecutamos la carga (Asegúrate de poner el nombre real de tu archivo CSV)
     // Si tu archivo está en la misma carpeta, pon solo el nombre.
-    simulador->cargarEquiposDesdeArchivo("C:\\Users\\Esteban Escamilla\\Desktop\\UNIVERSIDAD\\SEMESTRES\\SEMESTRE 2026-1\\INFORMATICA II\\DESAFIO 1\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv");
+
+    // Ruta Santiago: "C:\\Users\\SANTIAGO\\Desktop\\Ing.Electronica_UdeA\\Semestre 2\\Informatica2\\Desafio2\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv"
+    // Ruta Esteban: "C:\\Users\\Esteban Escamilla\\Desktop\\UNIVERSIDAD\\SEMESTRES\\SEMESTRE 2026-1\\INFORMATICA II\\DESAFIO 1\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv"
+
+    simulador->cargarEquiposDesdeArchivo("C:\\Users\\SANTIAGO\\Desktop\\Ing.Electronica_UdeA\\Semestre 2\\Informatica2\\Desafio2\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv");
 
     // 3. Pequeña prueba de validación (El Laboratorio)
     // Vamos a imprimir al primer equipo cargado para ver si fabricó a sus jugadores
