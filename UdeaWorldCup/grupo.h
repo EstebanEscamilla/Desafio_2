@@ -1,27 +1,29 @@
 #ifndef GRUPO_H
 #define GRUPO_H
 
-
-#include "Equipo.h"
+#include "equipo.h"
 
 class Grupo {
 private:
     char letraGrupo;
-    Equipo* equipos[4];
+
+    // 1. USO OBLIGATORIO DE MEMORIA DINÁMICA (Puntero doble)
+    Equipo** equipos;
+
     short int cantidadEquiposRegistrados;
 
 public:
-    Grupo(char _letra); //Constructor
+    Grupo(char _letra); // Constructor
     ~Grupo();           // Destructor
 
-    // Metodo
     void agregarEquipo(Equipo* nuevoEquipo);
+    void vaciarGrupo(); // <-- ADENTRO DE LA CLASE
 
-    // Getter
-    char getLetra();
-    short int getCantidadEquiposRegistrados();
+    // Getters constantes (Buenas prácticas)
+    char getLetra() const;
+    short int getCantidadEquiposRegistrados() const;
 
-    // GEtter especail para consultar el equipo por indice
+    // Getter especial para consultar el equipo por índice
     Equipo* getEquipo(int indice);
 };
 

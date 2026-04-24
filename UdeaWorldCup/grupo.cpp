@@ -1,24 +1,26 @@
-#include "Grupo.h"
+#include "grupo.h"
 
-//CONSTRUCTOR
+// CONSTRUCTOR
 Grupo::Grupo(char _letra) {
     this->letraGrupo = _letra;
     this->cantidadEquiposRegistrados = 0;
+
+    // INICIALIZACIÓN DINÁMICA
+    this->equipos = new Equipo*[4];
+
     for (int i = 0; i < 4; i++) {
         this->equipos[i] = nullptr;
     }
 }
 
-//DESTRUCTOR
+// DESTRUCTOR
 Grupo::~Grupo() {
-    for (int i = 0; i < this->cantidadEquiposRegistrados; i++) {
-        if (this->equipos[i] != nullptr) {
-            delete this->equipos[i];
-        }
-    }
+    // LA CORRECCIÓN SALVAVIDAS:
+    // Solo borramos el arreglo de punteros que creamos con 'new'.
+    delete[] this->equipos;
 }
 
-//AGREGAR EQUIPO (Máximo 4 por grupo)
+// AGREGAR EQUIPO
 void Grupo::agregarEquipo(Equipo* nuevoEquipo) {
     if (this->cantidadEquiposRegistrados < 4) {
         this->equipos[this->cantidadEquiposRegistrados] = nuevoEquipo;
@@ -26,16 +28,22 @@ void Grupo::agregarEquipo(Equipo* nuevoEquipo) {
     }
 }
 
-//GETTERS
-char Grupo::getLetra() {
+void Grupo::vaciarGrupo() {
+    this->cantidadEquiposRegistrados = 0;
+}
+
+// GETTERS
+char Grupo::getLetra() const {
     return this->letraGrupo;
 }
 
-short int Grupo::getCantidadEquiposRegistrados() {
+short int Grupo::getCantidadEquiposRegistrados() const {
     return this->cantidadEquiposRegistrados;
 }
 
-//GETTER ESPECIAL
 Equipo* Grupo::getEquipo(int indice) {
-    return this->equipos[indice];
+    if (indice >= 0 && indice < cantidadEquiposRegistrados) {
+        return this->equipos[indice];
+    }
+    return nullptr; // Protección contra desbordamiento
 }

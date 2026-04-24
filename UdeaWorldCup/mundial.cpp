@@ -1,106 +1,117 @@
-#include "Mundial.h"
-#include <fstream>
-#include <sstream>
-#include <cstdlib> // Para atoi y atof
+#include "mundial.h"
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 #include <iostream>
+#include <ctime>
+
+using namespace std;
 
 // CONSTRUCTOR
 Mundial::Mundial() {
     this->totalEquiposCargados = 0;
+
+    // 1. INICIALIZACIÓN DINÁMICA DE ARREGLOS
+    this->todosLosEquipos = new Equipo*[48];
     for (int i = 0; i < 48; i++) {
         this->todosLosEquipos[i] = nullptr;
     }
 
+    this->grupos = new Grupo*[12];
     char letras[12] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'};
     for (int i = 0; i < 12; i++) {
         this->grupos[i] = new Grupo(letras[i]);
     }
 }
 
+// DESTRUCTOR
 Mundial::~Mundial() {
+    for (int i = 0; i < this->totalEquiposCargados; i++) {
+        if (this->todosLosEquipos[i] != nullptr) {
+            delete this->todosLosEquipos[i];
+        }
+    }
+    delete[] this->todosLosEquipos;
+
     for (int i = 0; i < 12; i++) {
         if (this->grupos[i] != nullptr) {
             delete this->grupos[i];
         }
     }
+    delete[] this->grupos;
 }
 
+// LECTOR DE CSV BLINDADO CONTRA LA STL
+void Mundial::cargarEquiposDesdeArchivo(const char* rutaArchivo) {
+    FILE* archivo = fopen(rutaArchivo, "r");
 
-void Mundial::cargarEquiposDesdeArchivo(std::string rutaArchivo) {
-    // Usamos .c_str() para compatibilidad con fstream nativo
-    std::ifstream archivo(rutaArchivo.c_str());
-    std::string linea;
-
-    if (!archivo.is_open()) {
-        std::cout << "[ERROR] No se pudo abrir el archivo: " << rutaArchivo << std::endl;
+    if (archivo == nullptr) {
+        cout << "[ERROR] No se pudo abrir el archivo: " << rutaArchivo << endl;
         return;
     }
 
-    // 1. Saltamos las dos líneas de encabezado (Título y nombres de columnas)
-    std::getline(archivo, linea);
-    std::getline(archivo, linea);
+    char linea[512];
 
-    // 2. Leemos línea por línea hasta llegar a los 48 equipos
-    while (std::getline(archivo, linea) && totalEquiposCargados < 48) {
-        if (linea.empty()) continue; // Saltamos líneas en blanco accidentales
+    fgets(linea, 512, archivo);
+    fgets(linea, 512, archivo);
 
-        std::stringstream ss(linea);
-        std::string rankStr, pais, dt, federacion, conf, gfStr, gcStr, pgStr, peStr, ppStr;
+    while (fgets(linea, 512, archivo) && totalEquiposCargados < 48) {
+        char* rankStr = strtok(linea, ";");
+        if (rankStr == nullptr) continue;
 
-        // 3. Extraemos los campos usando ';' como delimitador
-        std::getline(ss, rankStr, ';');
-        std::getline(ss, pais, ';');
-        std::getline(ss, dt, ';');
-        std::getline(ss, federacion, ';');
-        std::getline(ss, conf, ';');
-        std::getline(ss, gfStr, ';');
-        std::getline(ss, gcStr, ';');
-        std::getline(ss, pgStr, ';');
-        std::getline(ss, peStr, ';');
-        std::getline(ss, ppStr, ';');
+        char* pais = strtok(nullptr, ";");
+        char* dt = strtok(nullptr, ";");
+        char* federacion = strtok(nullptr, ";");
+        char* conf = strtok(nullptr, ";");
+        char* gfStr = strtok(nullptr, ";");
+        char* gcStr = strtok(nullptr, ";");
+        char* pgStr = strtok(nullptr, ";");
+        char* peStr = strtok(nullptr, ";");
+        char* ppStr = strtok(nullptr, "\n");
 
-        // Verificación básica de datos
-        if (pais.empty()) continue;
+        if (pais == nullptr) continue;
 
-        // 4. Conversión de datos de String a tipos numéricos
-        int ranking = std::atoi(rankStr.c_str());
-        double gfTotal = std::atof(gfStr.c_str());
-        double gcTotal = std::atof(gcStr.c_str());
+        int ranking = atoi(rankStr);
+        double gfTotal = atof(gfStr);
+        double gcTotal = atof(gcStr);
 
-        // Calculamos partidos totales para el promedio
-        int pj = std::atoi(pgStr.c_str()) + std::atoi(peStr.c_str()) + std::atoi(ppStr.c_str());
+        int pj = atoi(pgStr) + atoi(peStr) + atoi(ppStr);
 
-        // Calculamos promedios (Evitando división por cero)
         double promedioGF = (pj > 0) ? (gfTotal / pj) : 0.0;
         double promedioGC = (pj > 0) ? (gcTotal / pj) : 0.0;
 
-        // 5. Instanciamos el Equipo en memoria dinámica
         Equipo* nuevo = new Equipo(pais, dt, ranking, conf);
-
         nuevo->setPromedioGolesFavorHistorico(promedioGF);
         nuevo->setPromedioGolesContraHistorico(promedioGC);
-
-        // Le pasamos el total histórico crudo que leímos del archivo (gfTotal) convertido a entero
         nuevo->generarJugadoresAutomaticamente((int)gfTotal);
-        // -------------------------
 
-        // 7. Guardamos el puntero en el arreglo maestro del Mundial
         this->todosLosEquipos[totalEquiposCargados] = nuevo;
         this->totalEquiposCargados++;
 
-        std::cout << "[CARGADO " << totalEquiposCargados << "/48] "
-                  << pais << " | Rank: " << ranking
-                  << " | GF Prom: " << promedioGF << std::endl;
+        // AQUI ES DONDE VA LA IMPRESION DE LA TABLA (A PURO C++)
+        cout << "[CARGADO ";
+        if (totalEquiposCargados < 10) cout << " ";
+        cout << totalEquiposCargados << "/48] ";
+
+        cout << pais;
+        int espaciosFaltantes = 22 - strlen(pais);
+        for (int e = 0; e < espaciosFaltantes; e++) {
+            cout << " ";
+        }
+
+        cout << " | Rank: ";
+        if (ranking < 10) cout << "  ";
+        else if (ranking < 100) cout << " ";
+        cout << ranking << endl;
     }
 
-    archivo.close();
-    std::cout << "--- Proceso de carga finalizado con exito ---" << std::endl;
+    fclose(archivo);
+    cout << "--- Proceso de carga finalizado con exito ---" << endl;
 }
 
-void Mundial::ordenarEquiposPorRanking(Equipo* arreglo[], int size) {
+void Mundial::ordenarEquiposPorRanking(Equipo** arreglo, int size) {
     for (int i = 0; i < size - 1; i++) {
         for (int j = 0; j < size - i - 1; j++) {
-            // Si el ranking del actual es mayor (peor) que el siguiente, se intercambian
             if (arreglo[j]->getRankingFIFA() > arreglo[j+1]->getRankingFIFA()) {
                 Equipo* temp = arreglo[j];
                 arreglo[j] = arreglo[j+1];
@@ -110,77 +121,63 @@ void Mundial::ordenarEquiposPorRanking(Equipo* arreglo[], int size) {
     }
 }
 
-
 bool Mundial::esValidoParaGrupo(Grupo* grupo, Equipo* equipoCandidato) {
     int contadorMismaConfederacion = 0;
-    string confCandidato = equipoCandidato->getConfederacion();
+    const char* confCandidato = equipoCandidato->getConfederacion();
 
-    // Contamos cuántos de la misma confederación ya están en el grupo
-    for (int i = 0; i < grupo->getCantidadEquiposActuales(); i++) {
-        if (grupo->getEquipo(i)->getConfederacion() == confCandidato) {
+    for (int i = 0; i < grupo->getCantidadEquiposRegistrados(); i++) {
+        if (strcmp(grupo->getEquipo(i)->getConfederacion(), confCandidato) == 0) {
             contadorMismaConfederacion++;
         }
     }
 
-    // Regla: UEFA máximo 2, los demás máximo 1
-    if (confCandidato == "UEFA") {
+    if (strcmp(confCandidato, "UEFA") == 0) {
         return contadorMismaConfederacion < 2;
     } else {
         return contadorMismaConfederacion < 1;
     }
 }
 
-
-// ---------------------------------------------------------
-// 3. EL MOTOR PRINCIPAL: EL SORTEO
-// ---------------------------------------------------------
 void Mundial::realizarSorteo() {
-    srand(time(0)); // Inicializamos la semilla de aletoriedad
+    srand(time(0));
 
     cout << "\n[SISTEMA] Preparando los bombos para el sorteo..." << endl;
 
-    Equipo* bombo1[12]; Equipo* bombo2[12];
-    Equipo* bombo3[12]; Equipo* bombo4[12];
+    Equipo** bombo1 = new Equipo*[12];
+    Equipo** bombo2 = new Equipo*[12];
+    Equipo** bombo3 = new Equipo*[12];
+    Equipo** bombo4 = new Equipo*[12];
+    Equipo** restoEquipos = new Equipo*[47];
 
-    Equipo* restoEquipos[47];
     int indexResto = 0;
 
-    // 1. Separar al Anfitrión (United States) y agrupar al resto
     for (int i = 0; i < 48; i++) {
-        if (todosLosEquipos[i]->getNombrePais() == "United States" || todosLosEquipos[i]->getNombrePais() == "USA") {
-            bombo1[0] = todosLosEquipos[i]; // El anfitrión va de primero
+        if (strcmp(todosLosEquipos[i]->getNombrePais(), "United States") == 0 ||
+            strcmp(todosLosEquipos[i]->getNombrePais(), "USA") == 0) {
+            bombo1[0] = todosLosEquipos[i];
         } else {
             restoEquipos[indexResto] = todosLosEquipos[i];
             indexResto++;
         }
     }
 
-    // 2. Ordenar a los 47 restantes por Ranking FIFA
     ordenarEquiposPorRanking(restoEquipos, 47);
 
-    // 3. Llenar los Bombos matemáticamente
     for (int i = 0; i < 47; i++) {
-        if (i < 11) {
-            bombo1[i + 1] = restoEquipos[i];   // Termina de llenar el Bombo 1
-        } else if (i < 23) {
-            bombo2[i - 11] = restoEquipos[i];  // Llena el Bombo 2
-        } else if (i < 35) {
-            bombo3[i - 23] = restoEquipos[i];  // Llena el Bombo 3
-        } else {
-            bombo4[i - 35] = restoEquipos[i];  // Llena el Bombo 4
-        }
+        if (i < 11)      bombo1[i + 1] = restoEquipos[i];
+        else if (i < 23) bombo2[i - 11] = restoEquipos[i];
+        else if (i < 35) bombo3[i - 23] = restoEquipos[i];
+        else             bombo4[i - 35] = restoEquipos[i];
     }
 
     cout << "[SISTEMA] Bombos creados. Iniciando extraccion al azar..." << endl;
 
-    // 4. EL SORTEO CON PROTECCIÓN ANTI-DEADLOCK
     bool sorteoExitoso = false;
     int reinicios = 0;
 
     while (!sorteoExitoso) {
         sorteoExitoso = true;
 
-        // Vaciar todos los grupos antes de empezar o reiniciar
         for(int i = 0; i < 12; i++) {
             grupos[i]->vaciarGrupo();
         }
@@ -188,17 +185,16 @@ void Mundial::realizarSorteo() {
         bool usadoB1[12] = {false}; bool usadoB2[12] = {false};
         bool usadoB3[12] = {false}; bool usadoB4[12] = {false};
 
-        // Recorrer los 12 grupos
         for (int g = 0; g < 12; g++) {
             int index, intentos;
             bool asignado;
 
-            // --- Extraer del BOMBO 1 --- (Sin restricciones porque el grupo está vacío)
+            // Bombo 1
             do { index = rand() % 12; } while (usadoB1[index]);
             usadoB1[index] = true;
             grupos[g]->agregarEquipo(bombo1[index]);
 
-            // --- Extraer del BOMBO 2 ---
+            // Bombo 2
             intentos = 0; asignado = false;
             while (!asignado && intentos < 100) {
                 index = rand() % 12;
@@ -209,9 +205,9 @@ void Mundial::realizarSorteo() {
                 }
                 intentos++;
             }
-            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+            if (intentos >= 100) { sorteoExitoso = false; break; }
 
-            // --- Extraer del BOMBO 3 ---
+            // Bombo 3
             intentos = 0; asignado = false;
             while (!asignado && intentos < 100) {
                 index = rand() % 12;
@@ -222,9 +218,9 @@ void Mundial::realizarSorteo() {
                 }
                 intentos++;
             }
-            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+            if (intentos >= 100) { sorteoExitoso = false; break; }
 
-            // --- Extraer del BOMBO 4 ---
+            // Bombo 4 (¡YA CORREGIDO, DEVOLVIMOS LA LÓGICA DEL SORTEO!)
             intentos = 0; asignado = false;
             while (!asignado && intentos < 100) {
                 index = rand() % 12;
@@ -235,13 +231,13 @@ void Mundial::realizarSorteo() {
                 }
                 intentos++;
             }
-            if (intentos >= 100) { sorteoExitoso = false; break; } // Deadlock detectado
+            if (intentos >= 100) { sorteoExitoso = false; break; }
         }
 
-        if (!sorteoExitoso) {
-            reinicios++; // Incrementa contador y el While vuelve a empezar automáticamente
-        }
+        if (!sorteoExitoso) reinicios++;
     }
+
+    delete[] bombo1; delete[] bombo2; delete[] bombo3; delete[] bombo4; delete[] restoEquipos;
 
     cout << "\n========================================" << endl;
     cout << "   SORTEO FINALIZADO CON EXITO" << endl;
@@ -250,16 +246,13 @@ void Mundial::realizarSorteo() {
 }
 
 void Mundial::mostrarTablasPosiciones() {
-    // Recorreremos los 12 grupos y le pediremos a cada uno que muestre a sus equipos
-    std::cout << "\n=== TABLAS DE POSICIONES ===" << std::endl;
+    cout << "\n=== TABLAS DE POSICIONES ===" << endl;
 }
 
 void Mundial::simularFaseGrupos() {
-    // Lógica matemática para enfrentar a los 4 equipos de cada grupo entre sí
-    std::cout << "[SISTEMA] Simulando partidos de Fase de Grupos..." << std::endl;
+    cout << "[SISTEMA] Simulando partidos de Fase de Grupos..." << endl;
 }
 
 void Mundial::simularEliminatorias() {
-    // Llaves de dieciseisavos, octavos, cuartos, semis y final
-    std::cout << "[SISTEMA] Entrando a rondas de muerte subita..." << std::endl;
+    cout << "[SISTEMA] Entrando a rondas de muerte subita..." << endl;
 }
