@@ -1,27 +1,27 @@
 #ifndef ESTADISTICA_H
 #define ESTADISTICA_H
 
-class Estadistica{
+class Estadistica {
 private:
     int goles;
     int asistencias;
     int tarjetasAmarillas;
     int tarjetasRojas;
     int minutos;
+
 public:
+    Estadistica();
+    ~Estadistica();
 
-    Estadistica();          //Constructor
-    ~Estadistica();         //Destructor
+    Estadistica& operator+=(const Estadistica& statsPartido);
 
-    // Metodo para actualizar stats
     void actualizarStats(int golesNuevos, int asistNuevas, int amarillasNuevas, int rojasNuevas, int minsNuevos);
     void setGoles(int _goles);
 
-    // Getters para consultar los atributos
-    int getGoles();
-    int getAsistencias();
-    int getTarjetasAmarillas();
-    int getTarjetasRojas();
-    int getMinutos();
+    int getGoles() const;
+    int getAsistencias() const;
+    int getTarjetasAmarillas() const;
+    int getTarjetasRojas() const;
+    int getMinutos() const;
 };
 #endif // ESTADISTICA_H

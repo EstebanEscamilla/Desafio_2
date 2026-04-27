@@ -1,20 +1,8 @@
-#include "Estadistica.h"
+#include "estadistica.h"
 
-//Constructor
-Estadistica::Estadistica() {
-    //Inicializar Estadisticas en cero
-    this->goles = 0;
-    this->asistencias = 0;
-    this->tarjetasAmarillas=0;
-    this->tarjetasRojas=0;
-    this->minutos=0;
-}
+Estadistica::Estadistica() : goles(0), asistencias(0), tarjetasAmarillas(0), tarjetasRojas(0), minutos(0) {}
+Estadistica::~Estadistica() {}
 
-// Destructor
-Estadistica::~Estadistica() {
-}
-
-// Declaracion del metodo para actualizar estadisticas
 void Estadistica::actualizarStats(int golesNuevos, int asistNuevas, int amarillasNuevas, int rojasNuevas, int minsNuevos) {
     this->goles += golesNuevos;
     this->asistencias += asistNuevas;
@@ -23,23 +11,18 @@ void Estadistica::actualizarStats(int golesNuevos, int asistNuevas, int amarilla
     this->minutos += minsNuevos;
 }
 
-void Estadistica::setGoles(int _goles) {
-    this->goles = _goles;
+Estadistica& Estadistica::operator+=(const Estadistica& statsPartido) {
+    this->goles += statsPartido.goles;
+    this->asistencias += statsPartido.asistencias;
+    this->tarjetasAmarillas += statsPartido.tarjetasAmarillas;
+    this->tarjetasRojas += statsPartido.tarjetasRojas;
+    this->minutos += statsPartido.minutos;
+    return *this;
 }
 
-//Getters
-int Estadistica::getGoles() {
-    return this->goles;
-}
-int Estadistica::getAsistencias() {
-    return this->asistencias;
-}
-int Estadistica::getTarjetasAmarillas(){
-    return this->tarjetasAmarillas;
-}
-int Estadistica::getTarjetasRojas(){
-    return this->tarjetasRojas;
-}
-int Estadistica::getMinutos(){
-    return this->minutos;
-}
+void Estadistica::setGoles(int _goles) { this->goles = _goles; }
+int Estadistica::getGoles() const { return this->goles; }
+int Estadistica::getAsistencias() const { return this->asistencias; }
+int Estadistica::getTarjetasAmarillas() const { return this->tarjetasAmarillas; }
+int Estadistica::getTarjetasRojas() const { return this->tarjetasRojas; }
+int Estadistica::getMinutos() const { return this->minutos; }
