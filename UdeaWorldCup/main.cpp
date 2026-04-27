@@ -37,7 +37,9 @@ int main() {
 
         switch (opcion) {
         case 1:
-            simulador->cargarEquiposDesdeArchivo("C:\\Users\\SANTIAGO\\Desktop\\Ing.Electronica_UdeA\\Semestre 2\\Informatica2\\Desafio2\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv");
+            // "C:\\Users\\SANTIAGO\\Desktop\\Ing.Electronica_UdeA\\Semestre 2\\Informatica2\\Desafio2\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv"
+            // "C:\Users\Esteban Escamilla\Desktop\UNIVERSIDAD\\SEMESTRES\\SEMESTRE 2026-1\INFORMATICA II\DESAFIO 1\Desafio_2\UdeaWorldCup\selecciones_clasificadas_mundial.csv"
+            simulador->cargarEquiposDesdeArchivo("C:\\Users\\Esteban Escamilla\\Desktop\\UNIVERSIDAD\\SEMESTRES\\SEMESTRE 2026-1\\INFORMATICA II\\DESAFIO 1\\Desafio_2\\UdeaWorldCup\\selecciones_clasificadas_mundial.csv");
             cout << "\n[METRICA] Memoria dinamica total reservada: aprox " << calcularMemoriaAproximada() << " bytes en Heap." << endl;
             break;
         case 2:
